@@ -1,0 +1,2307 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Gra egzaminacyjna – Neurologia</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        background: linear-gradient(135deg, #eef2ff, #f8fafc);
+        color: #172033;
+      }
+      .wrap {
+        max-width: 980px;
+        margin: auto;
+        padding: 24px;
+      }
+      .header {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: center;
+        margin-bottom: 18px;
+      }
+      h1 {
+        font-size: 24px;
+        margin: 0;
+      }
+      .pill {
+        background: #fff;
+        border: 1px solid #dbe3ef;
+        border-radius: 999px;
+        padding: 8px 12px;
+        color: #687386;
+        font-weight: 700;
+      }
+      .tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 18px;
+        flex-wrap: wrap;
+      }
+      .tab-btn {
+        border: 2px solid #dbe3ef;
+        background: #fff;
+        color: #687386;
+        border-radius: 14px;
+        padding: 12px 18px;
+        font-weight: 800;
+        font-size: 15px;
+        cursor: pointer;
+        transition: 0.15s;
+      }
+      .tab-btn:hover {
+        border-color: #93c5fd;
+      }
+      .tab-btn.active {
+        background: #2563eb;
+        border-color: #2563eb;
+        color: #fff;
+      }
+      .tab-panel {
+        display: none;
+      }
+      .tab-panel.active {
+        display: block;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid #dbe3ef;
+        border-radius: 22px;
+        box-shadow: 0 14px 38px rgba(30, 41, 59, 0.1);
+        padding: 24px;
+      }
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 14px;
+        color: #687386;
+        font-weight: 700;
+      }
+      .progress {
+        height: 10px;
+        background: #e5e7eb;
+        border-radius: 999px;
+        overflow: hidden;
+        margin: 14px 0 22px;
+      }
+      .progress span {
+        display: block;
+        height: 100%;
+        background: #2563eb;
+        width: 0%;
+        transition: 0.25s;
+      }
+      .q {
+        font-size: 21px;
+        line-height: 1.38;
+        font-weight: 800;
+        margin: 8px 0 18px;
+      }
+      .answers {
+        display: grid;
+        gap: 12px;
+      }
+      .answer {
+        width: 100%;
+        text-align: left;
+        border: 2px solid #e5e7eb;
+        background: #fff;
+        border-radius: 15px;
+        padding: 14px 16px;
+        font-size: 17px;
+        line-height: 1.35;
+        cursor: pointer;
+        transition: 0.15s;
+      }
+      .answer:hover {
+        border-color: #93c5fd;
+        background: #eff6ff;
+      }
+      .answer.correct {
+        border-color: #16a34a;
+        background: #dcfce7;
+      }
+      .answer.wrong {
+        border-color: #dc2626;
+        background: #fee2e2;
+      }
+      .answer:disabled {
+        cursor: default;
+      }
+      .feedback {
+        display: none;
+        margin-top: 16px;
+        padding: 14px 16px;
+        border-radius: 14px;
+        font-weight: 800;
+      }
+      .feedback.ok {
+        display: block;
+        background: #dcfce7;
+        color: #166534;
+      }
+      .feedback.bad {
+        display: block;
+        background: #fee2e2;
+        color: #991b1b;
+      }
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 18px;
+      }
+      button.ctrl {
+        border: 0;
+        border-radius: 12px;
+        padding: 12px 16px;
+        font-weight: 800;
+        cursor: pointer;
+        background: #2563eb;
+        color: white;
+      }
+      button.ctrl.secondary {
+        background: #e5e7eb;
+        color: #111827;
+      }
+      button.ctrl:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-top: 18px;
+      }
+      .stat {
+        background: #f8fafc;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        padding: 12px;
+        text-align: center;
+      }
+      .stat b {
+        display: block;
+        font-size: 22px;
+      }
+      .small {
+        font-size: 13px;
+        color: #687386;
+        margin-top: 14px;
+      }
+      @media (max-width: 640px) {
+        .wrap {
+          padding: 14px;
+        }
+        .header {
+          display: block;
+        }
+        .q {
+          font-size: 18px;
+        }
+        .answer {
+          font-size: 15px;
+        }
+        .stats {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="header">
+        <h1>Gra egzaminacyjna – Neurologia</h1>
+      </div>
+
+      <div class="tabs">
+        <button class="tab-btn active" id="tabBtn_a" data-target="a">Ze zdjęć</button>
+        <button class="tab-btn" id="tabBtn_b" data-target="b">Pozostałe bazy</button>
+      </div>
+
+      <!-- ===================== ZAKŁADKA A: Ze zdjęć ===================== -->
+      <div class="tab-panel active" id="tabPanel_a">
+        <div class="header" style="margin-bottom:10px;">
+          <div class="pill"><span id="totalCount_a"></span> pytań</div>
+        </div>
+        <div class="card">
+          <div class="topbar">
+            <div id="counter_a"></div>
+            <div id="scoreBox_a"></div>
+          </div>
+          <div class="progress"><span id="bar_a"></span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+            <div class="q" id="question_a"></div>
+            <button class="ctrl secondary" id="favBtn_a">⭐</button>
+          </div>
+          <div class="answers" id="answers_a"></div>
+          <div id="feedback_a" class="feedback"></div>
+          <div style="margin:15px 0;text-align:center;">
+            <input type="number" id="gotoQuestion_a" min="1" placeholder="Nr pytania"
+              style="width:100px;padding:8px;border-radius:8px;border:1px solid #ccc;">
+            <button class="ctrl" id="gotoBtn_a">Przejdź</button>
+          </div>
+          <div class="controls">
+            <button class="ctrl secondary" id="prevBtn_a">Wstecz</button>
+            <button class="ctrl" id="nextBtn_a">Następne</button>
+            <button class="ctrl secondary" id="shuffleBtn_a">Wymieszaj pytania</button>
+            <button class="ctrl secondary" id="restartBtn_a">Restart</button>
+            <button class="ctrl secondary" id="showFavBtn_a">⭐ Ucz się ulubionych</button>
+            <button class="ctrl secondary" id="showAllBtn_a">📚 Wszystkie pytania</button>
+          </div>
+          <div class="stats">
+            <div class="stat"><b id="good_a">0</b>dobrze</div>
+            <div class="stat"><b id="bad_a">0</b>źle</div>
+            <div class="stat"><b id="percent_a">0%</b>wynik</div>
+          </div>
+          <div class="small">
+            Po kliknięciu odpowiedzi pojawi się komunikat, czy jest poprawna.
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================== ZAKŁADKA B: Pozostałe bazy ===================== -->
+      <div class="tab-panel" id="tabPanel_b">
+        <div class="header" style="margin-bottom:10px;">
+          <div class="pill"><span id="totalCount_b"></span> pytań</div>
+        </div>
+        <div class="card">
+          <div class="topbar">
+            <div id="counter_b"></div>
+            <div id="scoreBox_b"></div>
+          </div>
+          <div class="progress"><span id="bar_b"></span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+            <div class="q" id="question_b"></div>
+            <button class="ctrl secondary" id="favBtn_b">⭐</button>
+          </div>
+          <div class="answers" id="answers_b"></div>
+          <div id="feedback_b" class="feedback"></div>
+          <div style="margin:15px 0;text-align:center;">
+            <input type="number" id="gotoQuestion_b" min="1" placeholder="Nr pytania"
+              style="width:100px;padding:8px;border-radius:8px;border:1px solid #ccc;">
+            <button class="ctrl" id="gotoBtn_b">Przejdź</button>
+          </div>
+          <div class="controls">
+            <button class="ctrl secondary" id="prevBtn_b">Wstecz</button>
+            <button class="ctrl" id="nextBtn_b">Następne</button>
+            <button class="ctrl secondary" id="shuffleBtn_b">Wymieszaj pytania</button>
+            <button class="ctrl secondary" id="restartBtn_b">Restart</button>
+            <button class="ctrl secondary" id="showFavBtn_b">⭐ Ucz się ulubionych</button>
+            <button class="ctrl secondary" id="showAllBtn_b">📚 Wszystkie pytania</button>
+          </div>
+          <div class="stats">
+            <div class="stat"><b id="good_b">0</b>dobrze</div>
+            <div class="stat"><b id="bad_b">0</b>źle</div>
+            <div class="stat"><b id="percent_b">0%</b>wynik</div>
+          </div>
+          <div class="small">
+            Po kliknięciu odpowiedzi pojawi się komunikat, czy jest poprawna.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+    /* ======================= DANE: Ze zdjęć ======================= */
+    let questionsZeZdjec = [
+  {
+    nr: 1,
+    orig: 1,
+    question: "Jaka dieta wskazana jest u pacjenta z chorobą Parkinsona przyjmującego preparaty lewodopy? (Np Madopral)",
+    answers: [
+      "niskobiałkowa",
+      "z ograniczeniem soli",
+      "z ograniczeniem wapnia",
+      "ketogenna",
+    ],
+    correct: 0,
+    page: 1,
+  },
+  {
+    nr: 2,
+    orig: 2,
+    question: "W zespole nadciśnienia wewnątrzczaszkowego dochodzi do reakcji wegetatywnych zwanych odruchem Cushinga, polega on na:",
+    answers: [
+      "wzroście ciśnienia tętniczego i jednoczesnym zwolnieniu tętna",
+      "wzroście ciśnienia tętniczego i jednoczesnym przyspieszeniu tętna",
+      "spadku ciśnienia tętniczego i jednoczesnym zwolnieniu tętna",
+      "spadku ciśnienia tętniczego i jednoczesnym przyspieszeniu tętna",
+    ],
+    correct: 0,
+    page: 1,
+  },
+  {
+    nr: 3,
+    orig: 3,
+    question: "Pacjent po ciężkim urazie czaszkowo-mózgowym nie wydaje żadnych dźwięków. Jego stan w skali Glasgow ocenisz na:",
+    answers: [
+      "3 punkty GCS",
+      "4 punkty GCS",
+      "6 punktów GCS",
+      "8 punktów GCS",
+    ],
+    correct: 0,
+    page: 1,
+  },
+  {
+    nr: 4,
+    orig: 4,
+    question: "Złamaniom dołu środkowego czaszki towarzyszy:",
+    answers: [
+      "krwiaki okularowe (oczy szopa)",
+      "zasinienie w okolicy wyrostka sutkowatego",
+      "wyciek płynu mózgowo-rdzeniowego przez nos",
+      "porażenie Bella",
+    ],
+    correct: 1,
+    page: 1,
+  },
+  {
+    nr: 5,
+    orig: 5,
+    question: "Odruchy brzuszne oceniamy na poziomie:",
+    answers: [
+      "Th 8–9",
+      "Th 10",
+      "Th 11–12",
+      "wszystkie odpowiedzi są prawdziwe",
+    ],
+    correct: 3,
+    page: 1,
+  },
+  {
+    nr: 6,
+    orig: 6,
+    question: "W zespole Guillaina–Barrégo znamienne jest:",
+    answers: [
+      "odsiebne zajęcie kończyn, często także nerwu kulszowego",
+      "dosiebne zajęcie kończyn, często także nerwu twarzowego oraz wzrost białka w płynie mózgowo-rdzeniowym",
+      "asymetryczne dosiebne zajęcie kończyn dolnych oraz obecność krwi w płynie mózgowo-rdzeniowym",
+      "zajęcie kończyn dolnych, nerwu twarzowego oraz narastanie objawów wieczorem",
+    ],
+    correct: 1,
+    page: 1,
+  },
+  {
+    nr: 7,
+    orig: 7,
+    question: "Z SM nie kojarzą się:",
+    answers: [
+      "rzuty i remisje",
+      "plaki",
+      "faza „on” i „off”",
+      "objaw Lhermitte’a",
+    ],
+    correct: 2,
+    page: 1,
+  },
+  {
+    nr: 8,
+    orig: 8,
+    question: "Afazja ruchowa to:",
+    answers: [
+      "afazja Brocka",
+      "afazja sensoryczna",
+      "afazja Wernickiego",
+      "afazja amnestyczna",
+    ],
+    correct: 0,
+    page: 1,
+  },
+  {
+    nr: 9,
+    orig: 9,
+    question: "Który z podanych sposobów monitorowania stanu neurologicznego u chorego jest najbardziej czuły:",
+    answers: [
+      "wykonywanie kontrolnych badań TK głowy",
+      "monitorowanie ciśnienia śródczaszkowego",
+      "pomiar ciśnienia parcjalnego dwutlenku węgla w opuszce żyły szyjnej wewnętrznej",
+      "ocena stanu świadomości chorego przy użyciu skali Glasgow",
+    ],
+    correct: 1,
+    page: 1,
+  },
+  {
+    nr: 10,
+    orig: 10,
+    question: "Elektronystagmografia to:",
+    answers: [
+      "monitorowanie bioelektrycznej czynności kory mózgowej",
+      "zarejestrowana odpowiedź OUN na bodziec wzrokowy",
+      "ocena elektrofizjologicznej funkcji mięśni",
+      "rejestracja zmian i natężenia pola elektrycznego, jakie powstaje podczas ruchu gałek ocznych",
+    ],
+    correct: 3,
+    page: 1,
+  },
+  {
+    nr: 11,
+    orig: 11,
+    question: "Napad niedokrwienny mózgu (TIA), wskaż zdanie prawdziwe:",
+    answers: [
+      "może trwać dłużej niż 24 godziny, ale nie przekracza 72 godzin",
+      "trwa nie dłużej niż 24 godziny",
+      "objawy kliniczne ustępują w ciągu 21 dni",
+      "może trwać od kilkunastu minut maksymalnie do godziny",
+    ],
+    correct: 1,
+    page: 1,
+  },
+  {
+    nr: 12,
+    orig: 12,
+    question: "Objaw „koła zębatego” występujący w chorobie Parkinsona to:",
+    answers: [
+      "podczas biernego rozciągania mięśni napotyka się szereg następujących po sobie oporów",
+      "opór wyczuwany podczas zginania i prostowania kończyny związany ze sztywnością mięśni",
+      "podczas prostowania kończyny równoczesne występowanie sztywności mięśniowej i …",
+      "osłabienie mięśni kończyn dolnych, utrata czucia bólu i temperatury",
+    ],
+    correct: 0,
+    page: 1,
+  },
+  {
+    nr: 13,
+    orig: 13,
+    question: "Hemiplegia to:",
+    answers: [
+      "porażenie połowicze",
+      "niedowład połowiczy",
+      "porażenie dwóch kończyn",
+      "niedowład dwóch kończyn",
+    ],
+    correct: 0,
+    page: 1,
+  },
+  {
+    nr: 14,
+    orig: 14,
+    question: "Pacjent przygotowywany do badania EEG powinien:",
+    answers: [
+      "być na czczo",
+      "mieć podaną premedykację",
+      "mieć świeżo umyte włosy bez środków upiększających",
+      "zdjąć wszelkie metalowe przedmioty i ozdoby z ciała",
+    ],
+    correct: 2,
+    page: 1,
+  },
+  {
+    nr: 15,
+    orig: 15,
+    question: "Oddech Cheyne’a–Stokesa to:",
+    answers: [
+      "oddech nieregularny pod względem częstości i rytmu",
+      "hiperwentylacja naprzemiennie z bezdechem",
+      "zatrzymanie oddechu na 2–30 s na szczycie przedłużonego wdechu",
+      "miarowe, głębokie i szybkie oddechy (powyżej 20–40/min)",
+    ],
+    correct: 1,
+    page: 1,
+  },
+  {
+    nr: 16,
+    orig: 16,
+    question: "Do najczęstszych objawów dystrofii mięśniowej Duchenne’a należy:",
+    answers: [
+      "chód kaczkowaty, trudności z wchodzeniem na schody i wstawaniem z pozycji leżącej, objaw Gowersa",
+      "uszkodzenie mięśni szkieletowych, opóźnienie rozwoju umysłowego, często znacznego stopnia",
+      "opóźnienie rozwoju umysłowego, nieprawidłowy zapis EEG, padaczka, wodogłowie",
+      "wodogłowie, upośledzenie umysłowe w stopniu lekkim, niedowład kończyn dolnych",
+    ],
+    correct: 0,
+    page: 1,
+  },
+  {
+    nr: 17,
+    orig: 17,
+    question: "Triada Charcota to:",
+    answers: [
+      "mowa skandowana, drżenie spoczynkowe, napady padaczkowe",
+      "mowa skandowana, oczopląs, drżenie zamiarowe",
+      "oczopląs, drżenie zamiarowe, bóle głowy",
+      "oczopląs, drżenie spoczynkowe, napady padaczkowe",
+    ],
+    correct: 1,
+    page: 1,
+  },
+  {
+    nr: 18,
+    orig: 18,
+    question: "Do składowych czucia powierzchniowego zaliczamy:",
+    answers: [
+      "czucie temperatury, czucie bólu, czucie dotyku",
+      "czucie ułożenia, czucie bólu, czucie dotyku",
+      "czucie wibracji, czucie ułożenia, czucie temperatury",
+      "czucie bólu, czucie dotyku, czucie wibracji",
+    ],
+    correct: 0,
+    page: 1,
+  },
+  {
+    nr: 19,
+    orig: 19,
+    question: "O głębokiej nieprzytomności chorego świadczy przede wszystkim:",
+    answers: [
+      "brak reakcji źrenic na światło",
+      "majaczenie",
+      "brak odruchu rzęskowego",
+      "brak reakcji na ból",
+    ],
+    correct: 3,
+    page: 1,
+  },
+  {
+    nr: 20,
+    orig: 20,
+    question: "Których z podanych niżej objawów NIE ZALICZAMY do objawów cerebrastenii pourazowej?",
+    answers: [
+      "bóle głowy i zawroty głowy",
+      "objawy chwiejności neurowegetatywnej",
+      "utrwalone niewielkie zmiany w EEG",
+      "symetryczne wzmożenie odruchów głębokich",
+    ],
+    correct: 3,
+    page: 1,
+  },
+  {
+    nr: 21,
+    orig: 21,
+    question: "Metody endowaskularne wykorzystywane są w leczeniu:",
+    answers: [
+      "chorób neuronu ruchowego",
+      "chorób układu pozapiramidowego",
+      "chorób demielinizacyjnych",
+      "chorób naczyniowych mózgu",
+    ],
+    correct: 3,
+    page: 1,
+  },
+  {
+    nr: 22,
+    orig: 22,
+    question: "Do objawów niepożądanych leczenia immunomodulacyjnego w SM nie należą:",
+    answers: [
+      "dreszcze, bóle mięśniowe",
+      "podwyższona temperatura ciała",
+      "pocenie się, złe samopoczucie",
+      "powiększenie ślinianek",
+    ],
+    correct: 3,
+    page: 1,
+  },
+  {
+    nr: 23,
+    orig: 23,
+    question: "U pacjenta z niedowładem połowiczym:",
+    answers: [
+      "stosowanie udogodnień typu drabinki sznurowe, lejce ułatwia pacjentowi siadanie z pozycji leżącej",
+      "wkładając górną część garderoby należy rozpoczynać od strony porażonej, a przy zdejmowaniu zachować odwrotną kolejność",
+      "wszystkie czynności rozpoczynamy od strony zdrowej, ponieważ tak łatwiej motywować pacjenta do aktywności",
+      "odpowiedź a i c jest prawidłowa",
+    ],
+    correct: 1,
+    page: 1,
+  },
+  {
+    nr: 24,
+    orig: 24,
+    question: "Objawy „koła zębatego”, „twarzy pokerzysty”, „rury ołowianej” występują w:",
+    answers: [
+      "udarze niedokrwiennym",
+      "chorobie Parkinsona",
+      "chorobie Alzheimera",
+      "stwardnieniu rozsianym",
+    ],
+    correct: 1,
+    page: 1,
+  },
+  {
+    nr: 25,
+    orig: 25,
+    question: "Jaka dieta wskazana jest u pacjenta ze zdiagnozowanym stwardnieniem rozsianym?",
+    answers: [
+      "dieta niskobiałkowa",
+      "dieta bogata w sole mineralne i nienasycone kwasy tłuszczowe",
+      "dieta niskowęglowodanowa",
+      "dieta prozdrowotna z ograniczeniem soli",
+    ],
+    correct: 1,
+    page: 1,
+  },
+  {
+    nr: 26,
+    orig: 26,
+    question: "Agnozja jest zaburzeniem:",
+    answers: [
+      "rozpoznawania i interpretacji bodźców czuciowych bez pomocy innych zmysłów i przy braku zaburzeń czucia obwodowego",
+      "abstrakcyjnego myślenia",
+      "emocjonalnym: cechuje ją agresja, gniew i hiperseksualizm",
+      "pola widzenia: może wystąpić przeciwstronne jednoimienne niedowidzenie połowicze",
+    ],
+    correct: 0,
+    page: 1,
+  },
+  {
+    nr: 27,
+    orig: 27,
+    question: "W leczeniu choroby Parkinsona za „złoty standard” uważa się:",
+    answers: [
+      "podanie leków psychotropowych",
+      "wszczepienie stymulatorów mózgu",
+      "podanie lewodopy – prekursora dopaminy",
+      "podanie Tensilonu – chlorku edrofonium",
+    ],
+    correct: 2,
+    page: 1,
+  },
+  {
+    nr: 28,
+    orig: 28,
+    question: "Edukacja pacjenta ze stwardnieniem rozsianym w trakcie leczenia immunomodulacyjnego – wskaż zdanie fałszywe:",
+    answers: [
+      "poinformowanie, iż powinien zażyć 2 tabletki paracetamolu przed wykonaniem iniekcji",
+      "poinformowanie, iż lek rozpuszczony musi być podany w ciągu najbliższych 5 godzin",
+      "poinformowanie, iż musi być zachowana ciągłość w podawaniu leków",
+      "przechowywanie leków w temperaturze 2–8°C",
+    ],
+    correct: 1,
+    page: 1,
+  },
+  {
+    nr: 29,
+    orig: 29,
+    question: "Pojęcie krwiaka podtwardówkowego podostrego odnosi się do przypadków rozpoznawanych:",
+    answers: [
+      "między 48–72 h od urazu",
+      "między 7–14 dniem od urazu",
+      "między 4–21 dniem od urazu",
+      "od 6 h do 30 dni od urazu",
+    ],
+    correct: 2,
+    page: 1,
+  },
+  {
+    nr: 30,
+    orig: 30,
+    question: "Tzw. triada Cushinga występująca w guzach mózgu to:",
+    answers: [
+      "wzrost ciśnienia tętniczego, zaburzenia oddychania, tachykardia",
+      "wzrost ciśnienia tętniczego, zaburzenia oddychania, bradykardia",
+      "spadek ciśnienia tętniczego, zwężenie źrenic, zwolnienie oddechu",
+      "spadek ciśnienia tętniczego, zaburzenia oddychania, bradykardia",
+    ],
+    correct: 1,
+    page: 1,
+  },
+  {
+    nr: 31,
+    orig: 31,
+    question: "Skala Botterella, w modyfikacji Hunta i Hessa służy do oceny stanu klinicznego chorego z:",
+    answers: [
+      "urazem kręgosłupa",
+      "stwardnieniem rozsianym",
+      "chorobą Parkinsona",
+      "krwotokiem spowodowanym pęknięciem tętniaka",
+    ],
+    correct: 3,
+    page: 1,
+  },
+  {
+    nr: 32,
+    orig: 32,
+    question: "W przypadku uwięźnięcia korzeni L2–L4 ból nosi nazwę:",
+    answers: [
+      "rwy kulszowej",
+      "rwy porażennej",
+      "rwy udowej",
+      "żadna odpowiedź nie jest prawidłowa",
+    ],
+    correct: 2,
+    page: 1,
+  },
+  {
+    nr: 33,
+    orig: 33,
+    question: "Chorego z rozpoznaniem wstrząśnienia mózgu należy pilnie obserwować, gdyż za obrazem wstrząśnienia mogą kryć się poważniejsze powikłania, np. pourazowy obrzęk mózgu czy krwiak. Do objawów świadczących o pourazowych powikłaniach uciskowych, które powinny zaniepokoić pielęgniarkę sprawującą opiekę nad chorym należą:",
+    answers: [
+      "zaburzenia mowy, zaburzenia orientacji czasowo-przestrzennej",
+      "spadek ciśnienia tętniczego, przyspieszenie tętna (>80/min), oddech Cheyne’a–Stokesa",
+      "zaburzenia oddychania (oddech apneustyczny, oddech rybi)",
+      "wzrost ciśnienia tętniczego, zwolnienie lub przyspieszenie oddechów, zwolnienie tętna, nierówność źrenic, zaburzenia świadomości",
+    ],
+    correct: 3,
+    page: 1,
+  },
+  {
+    nr: 34,
+    orig: 34,
+    question: "Izolacja pacjenta z infekcją układu nerwowego jest wymagana podczas infekcji:",
+    answers: [
+      "wirusowej",
+      "bakteryjnej",
+      "odpowiedzi a i b są prawidłowe",
+      "nie jest wymagana",
+    ],
+    correct: 2,
+    page: 1,
+  },
+  {
+    nr: 35,
+    orig: 35,
+    question: "Do przesiewowej oceny procesów poznawczych można zastosować skalę:",
+    answers: [
+      "MMSE",
+      "ADL",
+      "Barthel",
+      "żadna odpowiedź nie jest prawidłowa",
+    ],
+    correct: 0,
+    page: 1,
+  },
+  {
+    nr: 36,
+    orig: 36,
+    question: "W chorobie Picka dochodzi do zmian w:",
+    answers: [
+      "płatach czołowych i potylicznych",
+      "płatach czołowych i skroniowych",
+      "na całej powierzchni kory mózgowej",
+      "w istocie białej mózgu",
+    ],
+    correct: 1,
+    page: 1,
+  },
+  {
+    nr: 37,
+    orig: 37,
+    question: "Próba Romberga polega na:",
+    answers: [
+      "trafieniu palcem wskazującym do nosa",
+      "wywołaniu bólu przy biernym zginaniu KD",
+      "odczytywaniu napisanych znaków na plecach",
+      "staniu ze złączonymi stopami i wyciągniętymi rękami przy otwartych i zamkniętych oczach, ocena kierunku padania",
+    ],
+    correct: 3,
+    page: 1,
+  },
+  {
+    nr: 38,
+    orig: 38,
+    question: "Apokamnoza to:",
+    answers: [
+      "sztywność mięśniowa",
+      "męczliwość mięśni",
+      "drżenie samoistne",
+      "zubożenie czynności ruchowej",
+    ],
+    correct: 1,
+    page: 1,
+  },
+  {
+    nr: 39,
+    orig: 39,
+    question: "Istotą zespołu Guillaina–Barrégo są:",
+    answers: [
+      "zmiany zwyrodnieniowe kręgosłupa",
+      "rozsiane ogniska demielinizacji w mózgu i rdzeniu",
+      "zmiany zapalne i demielinizacyjne w nerwach obwodowych i korzeniach",
+      "mutacje genu na chromosomie X",
+    ],
+    correct: 2,
+    page: 1,
+  },
+  {
+    nr: 40,
+    orig: 40,
+    question: "Planując długofalową opiekę nad pacjentem nieprzytomnym szczególną uwagę zwrócisz na:",
+    answers: [
+      "zapobieganie przykurczom",
+      "bilans płynów",
+      "uniesienie kończyn dolnych",
+      "badanie dna oka",
+    ],
+    correct: 0,
+    page: 1,
+  },
+  {
+    nr: 41,
+    orig: 41,
+    question: "Podstawą do rozpoznania wstrząśnienia mózgu jest:",
+    answers: [
+      "stwierdzenie urazu głowy",
+      "stwierdzenie urazu głowy z utratą przytomności",
+      "stwierdzenie utraty przytomności",
+      "stwierdzenie urazu głowy z utratą przytomności i niepamięcią wsteczną",
+    ],
+    correct: 3,
+    page: 1,
+  },
+  {
+    nr: 42,
+    orig: 42,
+    question: "Po zabiegu operacyjnym zaopatrzenia tętniaka mózgu pielęgniarka zastosuje ułożenie chorego w pozycji:",
+    answers: [
+      "na plecach płasko, bez poduszki 12–24 h",
+      "na plecach z tułowiem i głową pod kątem ok. 30°",
+      "na boku przeciwnie do strony operowanej",
+      "na boku z głową, szyją i kręgosłupem w jednej osi",
+    ],
+    correct: 1,
+    page: 1,
+  },
+  {
+    nr: 43,
+    orig: 43,
+    question: "Do głównych objawów choroby Alzheimera zaliczamy:",
+    answers: [
+      "depresję, lęki, omamy",
+      "zaburzenia pamięci, upośledzenie zdolności do pracy, zaburzenia afatyczne",
+      "zaburzenia orientacji wzrokowo-przestrzennej, halucynacje, zaburzenia lękowe",
+      "zaburzenia pamięci, drżenie spoczynkowe, tiki nerwowe",
+    ],
+    correct: 1,
+    page: 1,
+  },
+  {
+    nr: 44,
+    orig: 44,
+    question: "Przełom cholinergiczny u pacjenta chorującego na miastenię może pojawić się w wyniku:",
+    answers: [
+      "zbyt małej dawki leków cholinergicznych",
+      "przedawkowania leków cholinergicznych",
+      "zbyt forsownych ćwiczeń fizycznych",
+      "przedawkowania steroidów",
+    ],
+    correct: 1,
+    page: 1,
+  },
+  {
+    nr: 45,
+    orig: 45,
+    question: "Zaburzenie przytomności, w którym obserwuje się brak stanu czuwania, a jedynie zachowaną reaktywność na silne bodźce z obecnością reakcji obronnych to:",
+    answers: [
+      "senność",
+      "sopor",
+      "śpiączka",
+      "somnolencja",
+    ],
+    correct: 1,
+    page: 1,
+  },
+  {
+    nr: 46,
+    orig: 46,
+    question: "Pielęgnujesz pacjenta z zagrażającym obrzękiem mózgu. Jakie ułożenie chorego w łóżku uznasz za najwłaściwsze?",
+    answers: [
+      "pozycja bezpieczna",
+      "bez poduszki z wałkiem pod szyją",
+      "pozycja półwysoka, głowa pod kątem 30° do klatki piersiowej",
+      "płasko na wznak",
+    ],
+    correct: 2,
+    page: 1,
+  },
+  {
+    nr: 47,
+    orig: 47,
+    question: "Ułożenie zapobiegające obrzękowi mózgu to:",
+    answers: [
+      "ułożenie Trendelenburga",
+      "ułożenie SIMSA",
+      "ułożenie Fowlera",
+      "głowa uniesiona pod kątem 30% (30°)",
+    ],
+    correct: 3,
+    page: 1,
+  },
+  {
+    nr: 48,
+    orig: 48,
+    question: "Przełom cholinergiczny charakteryzuje się:",
+    answers: [
+      "nużliwością mięśni, zaburzeniami oddechowymi, biegunką, potami, nudnościami i wymiotami, bólami brzucha, niepokojem i sennością, wąskimi źrenicami",
+      "niewydolnością mięśni oddechowych, szybko narastającą dusznością, szerokimi źrenicami",
+      "symetrycznymi osłabieniami mięśni obręczy barkowej i miednicznej, bólem i bolesnością mięśni, chory ma trudności w samoobsłudze, szerokimi źrenicami",
+      "łagodnie postępującym osłabieniem mięśni i wczesnymi przykurczami; stopniowym opadaniem powiek, przy niewielkim ograniczeniu ruchów gałek ocznych",
+    ],
+    correct: 0,
+    page: 1,
+  },
+  {
+    nr: 49,
+    orig: 49,
+    question: "Zapalenie rogów przednich rdzenia powoduje:",
+    answers: [
+      "enterowirus",
+      "krętek Borrelia burgdorferi",
+      "Candida albicans",
+      "Poliovirus hominis",
+    ],
+    correct: 3,
+    page: 1,
+  },
+  {
+    nr: 50,
+    orig: 50,
+    question: "Diadochokineza to:",
+    answers: [
+      "próba koordynacji kończyn dolnych",
+      "próba zborności ruchów",
+      "zdolność do wykonywania ruchów naprzemiennych",
+      "niezdolność do szybkiego uruchamiania grup mięśni antagonistycznych i agonistycznych",
+    ],
+    correct: 2,
+    page: 1,
+  },
+  {
+    nr: 51,
+    orig: 51,
+    question: "Triada objawów zespołu parkinsonowskiego to:",
+    answers: [
+      "tremor, rigor i hipokinezja",
+      "rigiditas, tremor i hipokinezja",
+      "tremor, hipokinezja, afazja",
+      "rigor, tremor, plegia",
+    ],
+    correct: 0,
+    page: 1,
+  },
+  {
+    nr: 52,
+    orig: 52,
+    question: "Nerw V i XI to nerwy:",
+    answers: [
+      "bloczkowy i dodatkowy",
+      "trójdzielny i twarzowy",
+      "trójdzielny i dodatkowy",
+      "podjęzykowo-gardłowy i trójdzielny",
+    ],
+    correct: 2,
+    page: 1,
+  },
+  {
+    nr: 53,
+    orig: 53,
+    question: "Które z podanych objawów zaliczamy do objawów oponowych?",
+    answers: [
+      "sztywność karku, objaw Brudzińskiego, objaw Kerniga",
+      "objaw Brudzińskiego, objaw Babińskiego, objaw Kerniga",
+      "objaw Lasègue’a, objaw Babińskiego, objaw Brudzińskiego",
+      "objaw Kerniga, sztywność karku, objaw Mackiewicza",
+    ],
+    correct: 0,
+    page: 1,
+  },
+  {
+    nr: 54,
+    orig: 54,
+    question: "Triada guza mózgu to:",
+    answers: [
+      "napady padaczkowe, anizokoria, anosomia",
+      "apraksja, bóle głowy, niedowidzenie połowicze",
+      "bóle głowy, tarcza zastoinowa, nudności bądź wymioty",
+      "napadowe bóle głowy, objaw Bella, wymioty",
+    ],
+    correct: 2,
+    page: 1,
+  },
+  {
+    nr: 55,
+    orig: 55,
+    question: "Leki miasteniczne u pacjentów z trudnościami w spożywaniu pokarmów podaje się:",
+    answers: [
+      "w trakcie głównych posiłków",
+      "ok. 15 min po posiłku",
+      "raz dziennie na czczo",
+      "20–30 min przed posiłkiem",
+    ],
+    correct: 3,
+    page: 1,
+  },
+  {
+    nr: 56,
+    orig: 56,
+    question: "Choroba objawia się jednostronnym występowaniem bolesnych pęcherzyków umiejscowionych na obszarach skóry unerwionych przez jeden korzeń rdzeniowy zwanych dermatomami.",
+    answers: [
+      "Półpasiec",
+      "Ospa",
+      "Odra",
+      "Borelioza",
+    ],
+    correct: 0,
+    page: 1,
+  },
+  {
+    nr: 57,
+    orig: 57,
+    question: "Założenie, że pielęgnowanie chorego z udarem mózgu pozostaje w ścisłym związku z tym co się dzieje w środowisku otaczającym człowieka jest charakterystyczne dla modelu pielęgnowania:",
+    answers: [
+      "D. Orem",
+      "B. Neuman",
+      "F. Nightingale",
+      "S. C. Roy",
+    ],
+    correct: 2,
+    page: 1,
+  },
+  {
+    nr: 58,
+    orig: 58,
+    question: "Jakie ułożenie chorego wskazane jest po punkcji lędźwiowej?",
+    answers: [
+      "pozycja leżąca na plecach przez okres ok. 24 godzin",
+      "ułożenie głowy i tułowia pod kątem 30°",
+      "ułożenie w pozycji Trendelenburga",
+      "pozycja leżąca na boku, jak podczas zabiegu pobierania płynu mózgowo-rdzeniowego",
+    ],
+    correct: 0,
+    page: 1,
+  },
+  {
+    nr: 59,
+    orig: 59,
+    question: "Objaw lucidum intervalum jest charakterystyczny dla krwiaka:",
+    answers: [
+      "Ostrego nadtwardówkowego",
+      "Ostrego podtwardówkowego",
+      "Przewlekłego podtwardówkowego",
+      "Podostrego podtwardówkowego",
+    ],
+    correct: 0,
+    page: 1,
+  },
+  {
+    nr: 60,
+    orig: 60,
+    question: "Zaburzenia mowy spowodowane uszkodzeniem aparatu wykonawczego mowy",
+    answers: [
+      "afazja ruchowa",
+      "afazja czuciowa",
+      "afazja mowy",
+      "dyzartria",
+    ],
+    correct: 3,
+    page: 1,
+  },
+  {
+    nr: 61,
+    orig: 61,
+    question: "Obecny objaw Babińskiego świadczy o:",
+    answers: [
+      "uszkodzeniu ośrodkowego neuronu ruchowego",
+      "uszkodzeniu odcinka lędźwiowego kręgosłupa,",
+      "uszkodzeniu drogi pozapiramidowej",
+      "ucisku ogona końskiego przez wysunięty krążek międzykręgowy.",
+    ],
+    correct: 0,
+    page: 1,
+  },
+  {
+    nr: 62,
+    orig: 62,
+    question: "Największa śmiertelność występuje u chorych z:",
+    answers: [
+      "ostrym krwiakiem podtwardówkowym,",
+      "przewlekłym krwiakiem podtwardówkowym,",
+      "ostrym krwiakiem nadtwardówkowym,",
+      "stłuczeniem mózgu",
+    ],
+    correct: 0,
+    page: 1,
+  },
+  {
+    nr: 63,
+    orig: 63,
+    question: "Talamotomia to zabieg polegający na:",
+    answers: [
+      "niszczeniu okolicy wzgórza przy użyciu wysokiej temperatury",
+      "niszczeniu okolicy gałki bladej przy użyciu wysokiej temperatury",
+      "przeszczepieniu neuronów z okolicy opuszki węchowej",
+      "niszczeniu okolicy prążkowia przy użyciu wysokiej temperatury",
+    ],
+    correct: 0,
+    page: 1,
+  },
+  {
+    nr: 64,
+    orig: 64,
+    question: "Otwarty uraz czaszkowo-mózgowy definiowany jest jako:",
+    answers: [
+      "rozległa rana skóry głowy z odsłonięciem kości pokrywy czaszki",
+      "uszkodzenie skóry głowy i krwiak nadtwardówkowy",
+      "uszkodzenie skóry i złamanie kości z przerwaniem opony twardej",
+      "każde złamanie kości podstawy czaszki",
+    ],
+    correct: 2,
+    page: 1,
+  },
+  {
+    nr: 65,
+    orig: 65,
+    question: "Czym jest diplopia oraz z upośledzenia czynności którego z nerwów wynika?",
+    answers: [
+      "prawidłowe widzenie, uszkodzenie nerwów III, IV i VI",
+      "brak termicznego czucia, uszkodzenie nerwów gałkoruchowych",
+      "widzenie kwadrantowe, uszkodzenie skrzyżowania wzrokowego nerwu II",
+      "podwójne widzenie, uszkodzenie nerwu III",
+    ],
+    correct: 3,
+    page: 1,
+  },
+];
+
+    /* ======================= DANE: Pozostałe bazy ======================= */
+    let questionsPozostale = [
+  {
+    nr: 1,
+    orig: 1,
+    question: "Skala Botterella w modyfikacji Hunta i Hessa służy do oceny stanu klinicznego chorego z:",
+    answers: [
+      "urazem kręgosłupa",
+      "stwardnieniem rozsianym",
+      "chorobą Parkinsona",
+      "krwotokiem spowodowanym pęknięciem tętniaka",
+    ],
+    correct: 3,
+    page: 1,
+  },
+  {
+    nr: 2,
+    orig: 2,
+    question: "Próba Romberga polega na",
+    answers: [
+      "trafieniu przez chorego palcem do nosa",
+      "wytępieniu bólu u chorego leżącego na wznak podczas biernego zginania kończyny dolnej w stawie biodrowym",
+      "„odczytywaniu” przez chorego znaków napisanych palcem na plecach",
+      "staniu ze złączonymi stopami i wyciągniętymi rękami przy otwartych i zamkniętych oczach, określa się kierunek padania",
+    ],
+    correct: 3,
+    page: 1,
+  },
+  {
+    nr: 3,
+    orig: 3,
+    question: "Działania pielęgniarskie zapobiegające zakażeniem i niedotlenieniu mózgu, wskaż zdanie fałszywe:",
+    answers: [
+      "jeśli chory jest odsysany, po wykonaniu procedury należy pacjenta wentylować 100% tlenem przez okres 10 minut ????? ale niepewne",
+      "jeśli chory jest odsysany, czas odsysania nie powinien być dłuższy niż 10 sekund",
+      "jeśli chory jest odsysany odstępy między procedurą powinny wynosić co najmniej 10 minut",
+      "każdorazowo do odsysania używamy jałowego cewnika",
+    ],
+    correct: 0,
+    page: 1,
+  },
+  {
+    nr: 4,
+    orig: 4,
+    question: "Skala Boterella, w modyfikacji Hunta i Hessa służy do oceny stanu klinicznego chorego z:",
+    answers: [
+      "urazem kręgosłupa",
+      "stwardnieniem rozsianym",
+      "chorobą Parkinsona",
+      "krwotokiem spowodowanym pęknięciem tętniaka",
+    ],
+    correct: 3,
+    page: 1,
+  },
+  {
+    nr: 5,
+    orig: 5,
+    question: "W przebiegu udaru niedokrwiennego może dochodzić do:",
+    answers: [
+      "zawroty głowy i nudności",
+      "ataksji kończyn",
+      "asynergi tułowia i oczopląs",
+      "wszystkie odp. są prawidłowe",
+    ],
+    correct: 3,
+    page: 1,
+  },
+  {
+    nr: 6,
+    orig: 6,
+    question: "Za krwawieniem podpajęczynówkowym przemawiają:",
+    answers: [
+      "nagły, bardzo silny ból głowy, wymioty, zespół oponowy, zaburzenia świadomości,p łyn mózgowo-rdzeniowy jednolicie krwisty",
+      "ból głowy, porażenie połowicze, propulsja, objaw Rossolimo, objaw Babińskiego",
+      "objawy oponowe, ataksja, drżenie zamiarowe, płyn mózgowo-rdzeniowy jednolicie krwisty",
+      "zaburzenia widzenia, tachykardia, niedowład połowiczy, objaw Babińskiego i Lasequ’a",
+    ],
+    correct: 0,
+    page: 1,
+  },
+  {
+    nr: 7,
+    orig: 7,
+    question: "Apraksja to :",
+    answers: [
+      "zaburzenia w zakresie rozumienia mowy",
+      "spowolnienie psychoruchowe",
+      "niemożność wykonywania wyuczonych celowych czynności ruchowych",
+      "całkowita niemożność chodzenia",
+    ],
+    correct: 2,
+    page: 1,
+  },
+  {
+    nr: 8,
+    orig: 8,
+    question: "Które z poniższych badań umożliwiają diagnostykę w SM:",
+    answers: [
+      "echoencefalografia i potencjały wywołane",
+      "EEG i MRI",
+      "potencjały wywołane i MRI",
+      "tomografia komputerowa",
+    ],
+    correct: 2,
+    page: 1,
+  },
+  {
+    nr: 9,
+    orig: 9,
+    question: "Zaburzenia połykania to:",
+    answers: [
+      "dysartria",
+      "dysfagia",
+      "afagia",
+      "apraksja",
+    ],
+    correct: 1,
+    page: 1,
+  },
+  {
+    nr: 10,
+    orig: 10,
+    question: "Nakłucie lędźwiowe wykonuje się:",
+    answers: [
+      "między wyrostkami kolczystymi L3 i L4 lub L4 i L5",
+      "w przestrzeni L1 – L2",
+      "na całej długości odcinka lędźwiowego",
+      "powyżej wysokości ogona końskiego",
+    ],
+    correct: 0,
+    page: 1,
+  },
+  {
+    nr: 11,
+    orig: 11,
+    question: "Oddech Biota to:",
+    answers: [
+      "oddech nieregularny pod względem częstości i rytmu",
+      "niemiarowe bardzo szybkie oddechy",
+      "miarowe, głębokie i szybkie oddechy (powyżej 20-40 / min)",
+      "hiperwentylacja naprzemiennie z bezdechem",
+    ],
+    correct: 0,
+    page: 1,
+  },
+  {
+    nr: 12,
+    orig: 12,
+    question: "Manitol 20 %;",
+    answers: [
+      "zwiększa sprężystość błony komórkowej erytrocytów",
+      "zwiększa lepkość krwi",
+      "ułatwia przepływ przez naczynia włosowate",
+      "wszystkie odp. są prawidłowe",
+    ],
+    correct: 3,
+    page: 1,
+  },
+  {
+    nr: 13,
+    orig: 13,
+    question: "Nerw V i XII to:",
+    answers: [
+      "nerw trójdzielny i podjęzykowy",
+      "nerw trójdzielny i błędny",
+      "nerw twarzowy i okołoruchowy",
+      "nerw przedsionkowo ślimakowy i bloczkowy",
+    ],
+    correct: 0,
+    page: 1,
+  },
+  {
+    nr: 14,
+    orig: 14,
+    question: "Pielęgnacja pacjenta z zaburzeniami mowy polega na tym, iż pielęgniarka, waż zdanie fałszywe:",
+    answers: [
+      "ocenia zdolność pacjenta do spontanicznego mówienia",
+      "ocenia zdolność pacjenta do wyrażania myśli w formie pisemnej",
+      "ocenia stopień nasilania zaburzeń komunikowania się",
+      "nie podejmuje żadnych czynności, aby skomunikować się z pacjentem",
+    ],
+    correct: 3,
+    page: 1,
+  },
+  {
+    nr: 15,
+    orig: 15,
+    question: "U większości chorych z zespołem Downa można stwierdzić zmiany w mózgu, które są typowe dla:",
+    answers: [
+      "choroby Alzheimera",
+      "choroby Parkinsona",
+      "SM",
+      "SLA",
+    ],
+    correct: 0,
+    page: 1,
+  },
+  {
+    nr: 16,
+    orig: 16,
+    question: "Podstawowym elementem układu nerwowego jest komórka nerwowa zwana",
+    answers: [
+      "neuronem",
+      "dendrytem",
+      "neurytem",
+      "dendronem",
+    ],
+    correct: 0,
+    page: 1,
+  },
+  {
+    nr: 17,
+    orig: 17,
+    question: "Istotą choroby Alzheimera jest:",
+    answers: [
+      "zanik rdzenia kręgowego",
+      "rozległy zanik mózgu, głównie kory mózgowej",
+      "napady padaczki, szczególnie skroniowej",
+      "zaburzenia równowagi",
+    ],
+    correct: 1,
+    page: 1,
+  },
+  {
+    nr: 18,
+    orig: 18,
+    question: "W zapobieganiu hipotonii ortostatycznej nie zalecisz:",
+    answers: [
+      "zwiększyć ilość podawanych płynów",
+      "zakładanie przed wstaniem pończochy kompresyjne",
+      "pozostać po jedzeniu w pozycji siedzącej przez ok 20-30 minut",
+      "układanie pacjenta w łóżku w pozycji leżącej z uniesionymi kończynami dolnymi",
+    ],
+    correct: 3,
+    page: 1,
+  },
+  {
+    nr: 19,
+    orig: 19,
+    question: "Chód chwiejny na szerokiej podstawie z zataczaniem, przypominający chód pijanego to:",
+    answers: [
+      "chód móżdżkowy",
+      "chód brodzący",
+      "chód koszący",
+      "chód ataktyczny",
+    ],
+    correct: 0,
+    page: 1,
+  },
+  {
+    nr: 20,
+    orig: 20,
+    question: "Konsekwencją skurczu naczyń mózgowych może być:",
+    answers: [
+      "wodogłowie mózgowe",
+      "udar niedokrwienny mózgu",
+      "krwiak podtwardówkowy",
+      "wstrząs septyczny",
+    ],
+    correct: 1,
+    page: 1,
+  },
+  {
+    nr: 21,
+    orig: 21,
+    question: "U osób z chorobą Parkinsona istnieje większe ryzyko:",
+    answers: [
+      "upadków, omdleń i urazów oraz zakrztuszenia się, nieodżywienia",
+      "depresji zachowań agresywnych",
+      "zaginięcia chorego i zagrożenia bezpieczeństwa w związku z zaburzeniami pamięci i orientacji",
+      "występowania niewydolności oddechowej",
+    ],
+    correct: 0,
+    page: 1,
+  },
+  {
+    nr: 22,
+    orig: 22,
+    question: "Zespół zaniedbywania połowiczego to:",
+    answers: [
+      "zaniedbywanie czynności higienicznych",
+      "ignorowanie bliskiej i dalekiej przestrzeni po stronie niesprawnej",
+      "trudność w odwzorowaniu nieskomplikowanego rysunku",
+      "zaburzenia działania po stronie sprawnej",
+    ],
+    correct: 1,
+    page: 1,
+  },
+  {
+    nr: 23,
+    orig: 23,
+    question: "Przy całkowitym porażeniu nerwu III stwierdza się:",
+    answers: [
+      "opadanie powiek",
+      "poszerzenie źrenicy",
+      "brak reakcji źrenicy na światło",
+      "wszystkie odpowiedzi są prawidłowe",
+    ],
+    correct: 3,
+    page: 1,
+  },
+  {
+    nr: 24,
+    orig: 24,
+    question: "Najczęstszymi przyczynami niedokrwiennymi udarów mózgu są:",
+    answers: [
+      "miażdżyca, nadciśnienie tętnicze, zatory pochodzenia sercowego",
+      "doustne środki antykoncepcyjne, zwiększona wartość hematokrytu",
+      "czynniki genetyczne , zaburzenia gospodarki lipidowej oraz mała aktywność fizyczna",
+      "przewlekły nikotynizm / alkoholiz, cukrzyca , nadciśnienie tętnicze, dieta bogata w tłuszcze zwierzęce, otyłość",
+    ],
+    correct: 0,
+    page: 1,
+  },
+  {
+    nr: 25,
+    orig: 25,
+    question: "Zgodnie z regułą Monro- Kellyego:",
+    answers: [
+      "suma objętości mózgu, płynu mózgowo-rdzeniowego i krwi jest wartością stałą",
+      "suma płynów mózgowo-rdzeniowych i krwi jest równa objętości mózgu",
+      "wzrost objętości mózgu powoduje zmniejszenie objętości płynu mózgowo-rdzeniowego i krwi",
+      "odpowiedz a i c",
+    ],
+    correct: 3,
+    page: 1,
+  },
+  {
+    nr: 26,
+    orig: 26,
+    question: "Do badań elektrofizjologicznych nie zalicz się:",
+    answers: [
+      "badanie potencjałów wywołanych",
+      "EMG",
+      "EEG",
+      "SPECT",
+    ],
+    correct: 3,
+    page: 1,
+  },
+  {
+    nr: 27,
+    orig: 27,
+    question: "Oddech apneustyczny obserwuje się :",
+    answers: [
+      "zatrzymaniem oddechu przez 20-30s na szczycie przedłużonego wydechu po czym astepuje krótki wydech",
+      "okresem gwałtownych oddechów naprzemiennie z okresami bezdechu",
+      "nieregularnymi oddechami pod względem czynności i rytmu",
+      "bezdechem",
+    ],
+    correct: 0,
+    page: 1,
+  },
+  {
+    nr: 28,
+    orig: 28,
+    question: "Do przyczyn polineuropatii nie należy:",
+    answers: [
+      "cukrzyca",
+      "alkoholizm",
+      "zatrucie przemysłowe np. metalem ciężkim",
+      "uraz mięśni",
+    ],
+    correct: 3,
+    page: 1,
+  },
+  {
+    nr: 29,
+    orig: 29,
+    question: "Wągrzyca mózgu spowodowana jest przez:",
+    answers: [
+      "Toxoplasma gondii",
+      "Tasiemca samotnego",
+      "Rabies virus can…",
+      "Poliovirus homnis",
+    ],
+    correct: 1,
+    page: 1,
+  },
+  {
+    nr: 30,
+    orig: 30,
+    question: "Mowa pacjentów chorujących na miastenie jest:",
+    answers: [
+      "głośna z akcentem głosek",
+      "skandowana",
+      "bełkotliwa",
+      "nosowa, zacichająca",
+    ],
+    correct: 3,
+    page: 1,
+  },
+  {
+    nr: 31,
+    orig: 31,
+    question: "Do powikłań występujących u chorych z tetraplegią nie należy:",
+    answers: [
+      "odleżyny",
+      "zaburzenia oddechowej",
+      "zaburzenia perystaltyki jelit",
+      "afazja",
+    ],
+    correct: 3,
+    page: 1,
+  },
+  {
+    nr: 32,
+    orig: 32,
+    question: "Amyloid to:",
+    answers: [
+      "neuroprzekaźnik, którego poziom spada w chorobie Alzheimera",
+      "białko ostrego rzutu w SM",
+      "lek z wyboru podawany w chorobie Alzheimera",
+      "białko stanowiące centra blaszek starczych",
+    ],
+    correct: 3,
+    page: 1,
+  },
+  {
+    nr: 33,
+    orig: 33,
+    question: "W ciężkich zaburzeniach przytomności u chorych po przebytym udarze niedokrwiennym mózgu najczęściej pojawiają się:",
+    answers: [
+      "zaburzenia oddechu",
+      "zaburzenia rytmu serca",
+      "zaburzenia termoregulacji",
+      "wszystkie odpowiedzi są prawidłowe",
+    ],
+    correct: 3,
+    page: 1,
+  },
+  {
+    nr: 34,
+    orig: 34,
+    question: "Porażenie to:",
+    answers: [
+      "całkowita niemożność wykonywania ruchu kończyny lub jej części",
+      "ograniczenie zakresu ruchu lub zmniejszenie jego siły",
+      "plegia",
+      "odp. a i c są prawidłowe",
+    ],
+    correct: 3,
+    page: 1,
+  },
+  {
+    nr: 35,
+    orig: 35,
+    question: "Badając źrenice zwrócisz uwagę na:",
+    answers: [
+      "reakcje na światło",
+      "kształt",
+      "wielkość",
+      "poprawna odp. a,b,c",
+    ],
+    correct: 3,
+    page: 1,
+  },
+  {
+    nr: 36,
+    orig: 36,
+    question: "Istotą miastenii jest:",
+    answers: [
+      "niedobór receptorów acetylocholiny",
+      "nadmiar receptorów acetylocholiny",
+      "niedobór dopaminy",
+      "niedobór serotoniny",
+    ],
+    correct: 0,
+    page: 1,
+  },
+  {
+    nr: 37,
+    orig: 37,
+    question: "Choroba Lyme to:",
+    answers: [
+      "kiła",
+      "borelioza",
+      "tężec",
+      "stwardnienie zanikowe boczne",
+    ],
+    correct: 1,
+    page: 1,
+  },
+  {
+    nr: 38,
+    orig: 38,
+    question: "EMG to:",
+    answers: [
+      "monitorowanie bioelektryczne czynności kory mózgowej",
+      "zarejestrowana odpowiedź OUN na bodziec wzrokowy",
+      "ocena elektrofizjologicznej funkcji mięśni",
+      "trójpłaszczyznowe zobrazowanie struktur anatomicznych czaszki",
+    ],
+    correct: 2,
+    page: 1,
+  },
+  {
+    nr: 39,
+    orig: 39,
+    question: "Sprawne i efektywne zwalczanie obrzęku mózgu polega na :",
+    answers: [
+      "uniesieniu głowy o ok 30*",
+      "osmoterapii",
+      "prowadzenia kontrolowanej hiperwentylacji zapewniające utrzymanie pO2 na poziomie 28-35 mmHg",
+      "wszystkie odp są prawidłowe",
+    ],
+    correct: 3,
+    page: 1,
+  },
+  {
+    nr: 40,
+    orig: 40,
+    question: "Po wystąpieniu padaczki w przebiegu leczenia guza mózgu w ramach pierwszej pomocy nie należy:",
+    answers: [
+      "umieścić chorego w bezpiecznym miejscu z zabezpieczeniem głowy przed urazem",
+      "ułożyć chorego w pozycji bezpiecznej",
+      "rozluźnić ubrania w okolicy szyi",
+      "włożyć choremu sztywny przedmiot między zęby aby nie doszło do szczękościsku",
+    ],
+    correct: 3,
+    page: 1,
+  },
+  {
+    nr: 41,
+    orig: 41,
+    question: "U chorych z hemiplegią nie stosuje się udogodnień typu",
+    answers: [
+      "lejce, podciągi, drabinki sznurkowe",
+      "balkonik lub trójnóg do chodzenia",
+      "stolik przyłóżkowy",
+      "uchwyty pozwalające na podnoszenie przedmiotów",
+    ],
+    correct: 0,
+    page: 1,
+  },
+  {
+    nr: 42,
+    orig: 42,
+    question: "Ubieranie osób z niedowładem połowiczym, wskaż zdanie fałszywe:",
+    answers: [
+      "dolną część garderoby zakładać od strony niesprawnej, przy zdejmowaniu zachować odwrotną kolejność",
+      "wszystkie czynności rozpoczynamy od strony zdrowej, aby zachęcić pacjenta do dalszej samodzielności",
+      "przy zdejmowaniu bluzek rozpoczynać od ręki sprawnej",
+      "pamiętać o dwuczęściowych ubraniach, unikać sukienek i tunik",
+    ],
+    correct: 1,
+    page: 1,
+  },
+  {
+    nr: 43,
+    orig: 43,
+    question: "Które z poniższych badań należą do badań elektrofizjologicznych?",
+    answers: [
+      "ENG, EMG, EEG",
+      "DSA, angio-KT, PW",
+      "MRI, SPECT, EEG",
+      "PET, SPECT, MRI",
+    ],
+    correct: 0,
+    page: 1,
+  },
+  {
+    nr: 44,
+    orig: 44,
+    question: "W edukacji chorego ze stwardnieniem rozsianym, u którego zostało włączone leczenie immunomodulacyjne z zastosowaniem interferonu należy uwzględnić informacje w zakresie identyfikacji następujących objawów niepożądanych:",
+    answers: [
+      "objawów grypopodobnych",
+      "reakcji skórnych w miejscu podania leku",
+      "wzrostu stężenia enzymów wątrobowych",
+      "odpowiedzi A, B, C są prawidłowe",
+    ],
+    correct: 3,
+    page: 1,
+  },
+  {
+    nr: 45,
+    orig: 45,
+    question: "Jaka pozycja ułożenia wskazana jest w ramach profilaktyki wzrostu ciśnienia wewnątrzczaszkowego u chorego po udarze niedokrwiennym mózgu?",
+    answers: [
+      "ułożenie w pozycji Trendelenburga",
+      "ułożenie głowy i tułowia pod kątem 30º",
+      "ułożenie w pozycji bezpiecznej",
+      "ułożenie na boku po stronie niedowładu",
+    ],
+    correct: 1,
+    page: 1,
+  },
+  {
+    nr: 46,
+    orig: 46,
+    question: "Z jakim zaburzeniem pęcherza moczowego mamy do czynienia po poprzecznym uszkodzeniu rdzenia powyżej Th 12?",
+    answers: [
+      "pęcherzem atonicznym ruchowym",
+      "pęcherzem odhamowanym",
+      "pęcherzem autonomicznym",
+      "pęcherzem atonicznym czuciowym",
+    ],
+    correct: 3,
+    page: 1,
+  },
+  {
+    nr: 47,
+    orig: 47,
+    question: "Jakie symptomy w obserwacji chorego z guzem mózgu wskazują na przewlekłe nadciśnienie wewnątrzczaszkowe?",
+    answers: [
+      "ból głowy, nudności i wymioty",
+      "zaburzenia świadomości",
+      "niedowład nerwu odwodzącego",
+      "odpowiedzi A, B, C są prawidłowe",
+    ],
+    correct: 3,
+    page: 1,
+  },
+  {
+    nr: 48,
+    orig: 48,
+    question: "Duży napad padaczkowy to?",
+    answers: [
+      "napad toniczno-kloniczny",
+      "napad nieświadomości",
+      "napad kloniczny",
+      "mioklonie",
+    ],
+    correct: 0,
+    page: 1,
+  },
+  {
+    nr: 49,
+    orig: 49,
+    question: "Które z poniższych skal służą do oceny ryzyka powstania odleżyny?",
+    answers: [
+      "Enisa i Sormentio, Torrance`a, kolorowa",
+      "Douglas, Norton, Waterlow, CBO",
+      "odpowiedzi A i B są prawidłowe",
+      "odpowiedzi A i B są nieprawidłowe",
+    ],
+    correct: 2,
+    page: 1,
+  },
+  {
+    nr: 50,
+    orig: 50,
+    question: "Które z poniższych symptomów obserwowanych u chorego świadczą o podrażnieniu opon mózgowo-rdzeniowych?",
+    answers: [
+      "światłowstręt, objaw sztywności karku",
+      "ból głowy, podwyższona temperatura ciała, dreszcze",
+      "odpowiedzi A i B są prawidłowe",
+      "odpowiedzi A i B są nieprawidłowe",
+    ],
+    correct: 2,
+    page: 1,
+  },
+  {
+    nr: 51,
+    orig: 51,
+    question: "Dla jakiego zaburzenia charakterystyczne jest pojęcie „szoku rdzeniowego”?",
+    answers: [
+      "ostrego krwiaka nadtwardówkowego",
+      "zespołu całkowitego poprzecznego uszkodzenia rdzenia kręgowego",
+      "zespołu poprzecznego niecałkowitego uszkodzenia rdzenia kręgowego (to też może być, ale występuje rzadziej)",
+      "zespołu ogona końskiego",
+    ],
+    correct: 1,
+    page: 1,
+  },
+  {
+    nr: 52,
+    orig: 52,
+    question: "Które ze skal nie służą do oceny chorego z chorobą Parkinsona?",
+    answers: [
+      "skala wg Hoehn-Yahr`a oraz wg Schwaba-Englanda (te służą przy Parkinsonie)",
+      "skala Hunta-Hessa, skala Loveta",
+      "odpowiedzi A i B są prawidłowe",
+      "odpowiedzi A i B są nieprawidłowe",
+    ],
+    correct: 1,
+    page: 1,
+  },
+  {
+    nr: 53,
+    orig: 53,
+    question: "W jaki sposób podajemy preparat Nimodypiny (Nimotop) u chorego z krwawieniem podpajęczynówkowym?",
+    answers: [
+      "wlew ciągły leku do wkłucia centralnego",
+      "wlew ciągły leku w ciemnej, ewentualnie „bursztynowej” strzykawce",
+      "odpowiedzi A i B są prawidłowe",
+      "odpowiedzi A i B są nieprawidłowe",
+    ],
+    correct: 2,
+    page: 1,
+  },
+  {
+    nr: 54,
+    orig: 54,
+    question: "Jak należy postąpić w przypadku podejrzenia płynootoku z nosa?",
+    answers: [
+      "pobrać wydzielinę z nosa do badania labolatoryjnego",
+      "nie tamować odpływu wydzieliny z nosa",
+      "obserwować chorego pod kątem zaburzeń neurologicznych",
+      "odpowiedzi A, B, C są prawidłowe",
+    ],
+    correct: 3,
+    page: 1,
+  },
+  {
+    nr: 55,
+    orig: 55,
+    question: "Która ze skal służy do oceny stopnia sprawności funkcjonlnej?",
+    answers: [
+      "Indeks Bartel",
+      "Skala Karnofsky`ego",
+      "KC MOC",
+      "odpowiedź A, B jest prawidłowa",
+    ],
+    correct: 3,
+    page: 1,
+  },
+  {
+    nr: 56,
+    orig: 56,
+    question: "U kogo wskazane może być wykonanie badania DSA?",
+    answers: [
+      "u chorego z krwawieniem podpajęczynówkowym",
+      "u chorego z tętniakiem mózgu",
+      "odpowiedzi A i B są prawidłowe",
+      "odpowiedzi A i B są nieprawidłowe",
+    ],
+    correct: 2,
+    page: 1,
+  },
+  {
+    nr: 57,
+    orig: 57,
+    question: "W przypadku wystąpienia zespołu ogona końskiego zabieg operacyjny powinien być wykonany w trybie natychmiastowym do:",
+    answers: [
+      "6 godzin",
+      "2 godzin",
+      "4 godzin",
+      "12 godzin",
+      "8 godzin",
+    ],
+    correct: 0,
+    page: 1,
+  },
+  {
+    nr: 58,
+    orig: 58,
+    question: "Których z podanych poniżej objawów nie zaliczamy do objawów cerebrastenii pourazowej?",
+    answers: [
+      "bóle głowy",
+      "zawroty głowy",
+      "objawy chwiejności neurowegetatywnej",
+      "utrwalone zmiany w EEG",
+      "symetryczne wzmożenie odruchów głębokich",
+    ],
+    correct: 3,
+    page: 1,
+  },
+  {
+    nr: 59,
+    orig: 59,
+    question: "Przyczyna neurogennego pęcherza odhamowanego jest:",
+    answers: [
+      "brak impulsów korowych hamujących łuk odruchowy „krzyżowego ośrodka oddania moczu”",
+      "uszkodzenie rdzenia na poziomie szyjnym lub piersiowym",
+      "uszkodzenie neurony dolnego (ośrodka rdzeniowego)",
+      "polineuropatia",
+      "uszkodzenie dendrytu",
+    ],
+    correct: 0,
+    page: 1,
+  },
+  {
+    nr: 60,
+    orig: 60,
+    question: "Objaw Bikelesa pojawia się przy:",
+    answers: [
+      "rwie ramiennej",
+      "rwie udowej",
+      "rwie kulszowej",
+      "miastenii",
+      "polineuropatii",
+    ],
+    correct: 0,
+    page: 1,
+  },
+  {
+    nr: 61,
+    orig: 61,
+    question: "Zespół wklinowania (wgłobienia) zdarza się w przebiegu:",
+    answers: [
+      "guzów mózgu",
+      "krwotoków mózgu",
+      "SAH",
+      "zapalenia mózgu i opon mózgowych",
+      "wszystkie wyżej wymienione",
+    ],
+    correct: 4,
+    page: 1,
+  },
+  {
+    nr: 62,
+    orig: 62,
+    question: "Poziom zakończenia rdzenia w kanale kręgowym to:",
+    answers: [
+      "wysokość 1. lub 2. kręgu lędźwiowego",
+      "wysokość między 2. a 4. kręgiem lędźwiowym",
+      "przestrzeń pomiędzy L4, a L1",
+      "kręgi poniżej S1",
+      "żadna odpowiedź nie jest prawidłowa",
+    ],
+    correct: 0,
+    page: 1,
+  },
+  {
+    nr: 63,
+    orig: 63,
+    question: "Do objawów korzeniowych nie zalicza się:",
+    answers: [
+      "objaw Mackiewicza",
+      "objaw Lasegue’a",
+      "objaw Oppenheima",
+      "objaw Fajersztajna-Krzemickiego",
+      "żadna odpowiedź nie jest prawidłowa",
+    ],
+    correct: 2,
+    page: 1,
+  },
+  {
+    nr: 64,
+    orig: 64,
+    question: "Do charakterystycznych objawów w polineuropatii nie należą:",
+    answers: [
+      "niedowłady wiotkie",
+      "niedowłady spastyczne",
+      "zniesienie odruchów głębokich",
+      "zaburzenia czuciowe i parestezje",
+      "zmiany troficzny",
+    ],
+    correct: 1,
+    page: 1,
+  },
+  {
+    nr: 65,
+    orig: 65,
+    question: "Wskutek wypadnięcia tarczy międzykręgowej między C5 a C6 powstaje podrażnienie i uszkodzenie korzonka:",
+    answers: [
+      "C6",
+      "C5",
+      "C4",
+      "C5 i C6",
+      "C7",
+    ],
+    correct: 0,
+    page: 1,
+  },
+  {
+    nr: 66,
+    orig: 66,
+    question: "Przejściowe pourazowe zaburzenia czynności mózgu zwłaszcza pnia mózgu nazywa się:",
+    answers: [
+      "stłuczeniem mózgu;",
+      "wstrząśnieniem mózgu;",
+      "encefalopatią pourazową;",
+      "obrzękiem mózgu.",
+    ],
+    correct: 1,
+    page: 1,
+  },
+  {
+    nr: 67,
+    orig: 67,
+    question: "Podejrzenie złamania podstawy czaszki nasuwają:",
+    answers: [
+      "obustronny krwiak \"okularowy\", krwotok z jamy ustnej; krwisty lub krwisto-wodnisty wyciek z ucha; ???? DO SPRAWDZENIA",
+      "zacienienie skóry okolicy wyrostka sutkowatego, niepamięć wsteczna, hipertonia;",
+      "bradykardia, tachypnoe, obustronny krwiak \"okularowy\";",
+      "krwotok z jamy ustnej, hipotonia, światłowstręt.",
+    ],
+    correct: 0,
+    page: 1,
+  },
+  {
+    nr: 68,
+    orig: 68,
+    question: "Zespół podmiotowy spotyka się:",
+    answers: [
+      "po umiarkowanych urazach głowy;",
+      "po ciężkich urazach głowy;",
+      "w przypadku powtórnego urazu;",
+      "wszystkie odp. są prawdziwe",
+    ],
+    correct: 0,
+    page: 1,
+  },
+  {
+    nr: 69,
+    orig: 69,
+    question: "U zdecydowanej większości chorych płynotok uszny ustaje w ciągu:",
+    answers: [
+      "24 - 48 h;",
+      "12 h;",
+      "72 h;",
+      "w ciągu tygodnia.",
+    ],
+    correct: 0,
+    page: 1,
+  },
+  {
+    nr: 70,
+    orig: 70,
+    question: "Najważniejszym objawem krwiaka nadtwardówkowego jest:",
+    answers: [
+      "postępujące zaburzenie przytomności;",
+      "zawroty głowy;",
+      "nudności i wymioty;",
+      "bladość powłok skórnych.",
+    ],
+    correct: 0,
+    page: 1,
+  },
+  {
+    nr: 71,
+    orig: 71,
+    question: "Za złoty standard w ocenie wartości ICP uważa się:",
+    answers: [
+      "czujnik umiejscowiony w układzie komorowym;",
+      "uniesienie głowy pod katem 20-30 stopni;",
+      "dokonanie pomiarów wartości RR, tętna i oddechów co 2 godziny;",
+      "żadna z odp. nie jest prawdziwa.",
+    ],
+    correct: 0,
+    page: 1,
+  },
+  {
+    nr: 72,
+    orig: 72,
+    question: "Podstawowym celem opieki nad pacjentem po ciężkim urazie głowy jest:",
+    answers: [
+      "zapobieganie wtórnemu urazowi mózgu; zapobieganiu zaburzeniom krzepnięcia;",
+      "nadzór umożliwiający wczesne wykrycie pogorszenia stanu neurologicznego pacjenta;",
+      "przeciwdziałaniu hipotonii tętniczej;",
+      "wszystkie odp. są prawdziwe.",
+    ],
+    correct: 3,
+    page: 1,
+  },
+  {
+    nr: 73,
+    orig: 73,
+    question: "Obrzęk cytotoksyczny:",
+    answers: [
+      "jest obrzękiem niedokrwiennym;",
+      "doprowadza do upośledzenia odżywienia neuronów;",
+      "pojawia się w ciągu pierwszej godziny po urazie;",
+      "wszystkie odp. są prawdziwe",
+    ],
+    correct: 3,
+    page: 1,
+  },
+];
+
+    /* ======================= LOGIKA ZAKŁADEK ======================= */
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('tabPanel_' + btn.dataset.target).classList.add('active');
+      });
+    });
+
+    /* ======================= SILNIK QUIZU (generyczny, parametryzowany sufiksem) ======================= */
+    function startQuiz(suffix, originalQuestions) {
+      let questions = originalQuestions.map((q) => ({ ...q })),
+        current = 0,
+        selected = Array(questions.length).fill(null),
+        favorites = [],
+        correctCount = 0,
+        wrongCount = 0;
+
+      const el = (id) => document.getElementById(id + suffix);
+
+      el("totalCount").textContent = questions.length;
+
+      function escapeHtml(s) {
+        return String(s).replace(
+          /[&<>"']/g,
+          (m) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#039;",
+            })[m],
+        );
+      }
+
+      function render() {
+        const q = questions[current];
+        el("favBtn").textContent = favorites.includes(q.orig)
+          ? "⭐ Usuń z ulubionych"
+          : "☆ Dodaj do ulubionych";
+        el("counter").textContent = `Pytanie ${current + 1} / ${questions.length}`;
+        el("scoreBox").textContent = `Wynik: ${correctCount} dobrych, ${wrongCount} złych`;
+        el("bar").style.width = `${((current + 1) / questions.length) * 100}%`;
+        el("question").innerHTML = q.question
+          .replace(/: a\)/g, ":<br><br>a)")
+          .replace(/\. b\)/g, ".<br>b)")
+          .replace(/\. c\)/g, ".<br>c)")
+          .replace(/\. d\)/g, ".<br>d)");
+        el("answers").innerHTML = "";
+        el("feedback").className = "feedback";
+        el("feedback").textContent = "";
+        q.answers.forEach((ans, i) => {
+          const btn = document.createElement("button");
+          btn.className = "answer";
+          btn.innerHTML = `<b>${String.fromCharCode(65 + i)}.</b> ${escapeHtml(ans)}`;
+          btn.onclick = () => choose(i);
+          if (selected[current] !== null) {
+            btn.disabled = true;
+            if (i === q.correct) btn.classList.add("correct");
+            if (i === selected[current] && i !== q.correct) btn.classList.add("wrong");
+          }
+          el("answers").appendChild(btn);
+        });
+        if (selected[current] !== null) showFeedback(selected[current] === q.correct);
+        el("prevBtn").disabled = current === 0;
+        el("nextBtn").textContent = current === questions.length - 1 ? "Koniec" : "Następne";
+        updateStats();
+      }
+
+      function choose(i) {
+        if (selected[current] !== null) return;
+        selected[current] = i;
+        if (i === questions[current].correct) correctCount++;
+        else wrongCount++;
+        render();
+      }
+
+      function showFeedback(ok) {
+        const f = el("feedback");
+        f.className = "feedback " + (ok ? "ok" : "bad");
+        f.textContent = ok ? "✅ Dobra odpowiedź!" : "❌ Zła odpowiedź!";
+      }
+
+      function updateStats() {
+        el("good").textContent = correctCount;
+        el("bad").textContent = wrongCount;
+        const done = correctCount + wrongCount;
+        el("percent").textContent = done ? Math.round((correctCount / done) * 100) + "%" : "0%";
+      }
+
+      el("favBtn").onclick = () => {
+        if (favorites.includes(questions[current].orig)) {
+          favorites = favorites.filter((i) => i !== questions[current].orig);
+        } else {
+          favorites.push(questions[current].orig);
+        }
+        render();
+      };
+
+      el("showFavBtn").onclick = () => {
+        if (favorites.length === 0) {
+          alert("Nie masz jeszcze ulubionych pytań.");
+          return;
+        }
+        questions = originalQuestions.filter((q) => favorites.includes(q.orig)).map((q) => ({ ...q }));
+        selected = Array(questions.length).fill(null);
+        current = 0;
+        correctCount = 0;
+        wrongCount = 0;
+        el("totalCount").textContent = questions.length;
+        render();
+      };
+
+      el("showAllBtn").onclick = () => {
+        questions = originalQuestions.map((q) => ({ ...q }));
+        selected = Array(questions.length).fill(null);
+        current = 0;
+        correctCount = 0;
+        wrongCount = 0;
+        el("totalCount").textContent = questions.length;
+        render();
+      };
+
+      el("nextBtn").onclick = () => {
+        if (current < questions.length - 1) {
+          current++;
+          render();
+        } else {
+          alert(`Koniec gry! Wynik: ${correctCount}/${questions.length}`);
+        }
+      };
+
+      el("prevBtn").onclick = () => {
+        if (current > 0) {
+          current--;
+          render();
+        }
+      };
+
+      el("restartBtn").onclick = () => {
+        selected = Array(questions.length).fill(null);
+        correctCount = 0;
+        wrongCount = 0;
+        current = 0;
+        render();
+      };
+
+      el("shuffleBtn").onclick = () => {
+        for (let i = questions.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [questions[i], questions[j]] = [questions[j], questions[i]];
+        }
+        selected = Array(questions.length).fill(null);
+        correctCount = 0;
+        wrongCount = 0;
+        current = 0;
+        render();
+      };
+
+      el("gotoBtn").onclick = () => {
+        const nr = parseInt(el("gotoQuestion").value);
+        if (!isNaN(nr) && nr >= 1 && nr <= questions.length) {
+          current = nr - 1;
+          render();
+        } else {
+          alert("Podaj numer od 1 do " + questions.length);
+        }
+      };
+
+      el("gotoQuestion").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          el("gotoBtn").click();
+        }
+      });
+
+      render();
+    }
+
+    startQuiz("_a", questionsZeZdjec);
+    startQuiz("_b", questionsPozostale);
+    </script>
+  </body>
+</html>
